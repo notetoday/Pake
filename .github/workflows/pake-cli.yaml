@@ -1,5 +1,4 @@
 name: Build App With Pake CLI
-
 on:
   workflow_dispatch:
     inputs:
@@ -61,12 +60,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Install node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: 18
 
       - name: Install Rust for ubuntu-20.04
         if: inputs.platform == 'ubuntu-20.04'
@@ -119,11 +118,6 @@ jobs:
           npm install shelljs
           npm install axios
 
-      - name: Create output directory
-        run: |
-          if [ ! -d "node_modules/pake-cli/output" ]; then mkdir -p node_modules/pake-cli/output; fi
-        shell: bash
-
       - name: Build with pake-cli
         run: |
           node ./script/build_with_pake_cli.js
@@ -140,29 +134,8 @@ jobs:
           TARGETS: ${{ inputs.targets }}
           SAFE_DOMAIN: ${{ inputs.safe_domain }}
 
-      - name: Move and rename build output (Windows)
-        if: inputs.platform == 'windows-latest'
-        run: |
-          msi_file=$(find node_modules/pake-cli/src-tauri/target/release/bundle/msi -name "*.msi")
-          mv $msi_file node_modules/pake-cli/output/${{ inputs.name }}.msi
-        shell: bash
-
-      - name: Move and rename build output (MacOS)
-        if: inputs.platform == 'macos-latest'
-        run: |
-          dmg_file=$(find node_modules/pake-cli -name "*.dmg")
-          mv $dmg_file node_modules/pake-cli/output/${{ inputs.name }}.dmg
-        shell: bash
-
-      - name: Move and rename build output (Ubuntu)
-        if: inputs.platform == 'ubuntu-20.04'
-        run: |
-          linux_file=$(find node_modules/pake-cli -name "*.deb" -o -name "*.appimage")
-          mv $linux_file node_modules/pake-cli/output/${{ inputs.name }}.${linux_file##*.}
-        shell: bash
-
       - name: Upload archive
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: output-${{ inputs.platform }}.zip
           path: node_modules/pake-cli/output/*
