@@ -136,16 +136,20 @@ jobs:
 
       - name: Move and rename output files
         run: |
-          if [ "${{ inputs.platform }}" = "windows-latest" ]; then
-            mv $(find . -name "*.msi") node_modules/pake-cli/output/${{ inputs.name }}.msi
-          elif [ "${{ inputs.platform }}" = "macos-latest" ]; then
-            mv $(find . -name "*.dmg") node_modules/pake-cli/output/${{ inputs.name }}.dmg
-          elif [ "${{ inputs.platform }}" = "ubuntu-20.04" ]; then
-            mv output/* node_modules/pake-cli/output/${{ inputs.name }}
-          fi
+          if ($env:INPUT_PLATFORM -eq "windows-latest") {
+            Move-Item -Path (Get-ChildItem -Path . -Filter "*.msi" -Recurse).FullName -Destination "node_modules/pake-cli/output/${env:INPUT_NAME}.msi" -Force
+          } elseif ($env:INPUT_PLATFORM -eq "macos-latest") {
+            Move-Item -Path (Get-ChildItem -Path . -Filter "*.dmg" -Recurse).FullName -Destination "node_modules/pake-cli/output/${env:INPUT_NAME}.dmg" -Force
+          } elseif ($env:INPUT_PLATFORM -eq "ubuntu-20.04") {
+            Move-Item -Path output/* -Destination "node_modules/pake-cli/output/${env:INPUT_NAME}" -Force
+          }
+        shell: pwsh
+        env:
+          INPUT_PLATFORM: ${{ inputs.platform }}
+          INPUT_NAME: ${{ inputs.name }}
 
       - name: Upload output files
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         with:
           name: output-files-${{ inputs.platform }}
           path: node_modules/pake-cli/output/*
