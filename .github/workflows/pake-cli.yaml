@@ -134,10 +134,20 @@ jobs:
           TARGETS: ${{ inputs.targets }}
           SAFE_DOMAIN: ${{ inputs.safe_domain }}
 
-      - name: Upload archive
+      - name: Move and rename output files
+        run: |
+          if [ "${{ inputs.platform }}" = "windows-latest" ]; then
+            mv $(find . -name "*.msi") node_modules/pake-cli/output/${{ inputs.name }}.msi
+          elif [ "${{ inputs.platform }}" = "macos-latest" ]; then
+            mv $(find . -name "*.dmg") node_modules/pake-cli/output/${{ inputs.name }}.dmg
+          elif [ "${{ inputs.platform }}" = "ubuntu-20.04" ]; then
+            mv output/* node_modules/pake-cli/output/${{ inputs.name }}
+          fi
+
+      - name: Upload output files
         uses: actions/upload-artifact@v3
         with:
-          name: output-${{ inputs.platform }}.zip
+          name: output-files-${{ inputs.platform }}
           path: node_modules/pake-cli/output/*
           retention-days: 3
 
