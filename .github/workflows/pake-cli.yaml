@@ -1,5 +1,4 @@
 name: Build App With Pake CLI
-
 on:
   workflow_dispatch:
     inputs:
@@ -61,12 +60,12 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Set up Node.js 20
-        uses: actions/setup-node@v3
+      - name: Install node
+        uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: 18
 
       - name: Install Rust for ubuntu-20.04
         if: inputs.platform == 'ubuntu-20.04'
@@ -103,7 +102,7 @@ jobs:
           npm install pake-cli
 
       - name: Rust cache restore
-        uses: actions/cache/restore@v3
+        uses: actions/cache/restore@v4
         id: cache_store
         with:
           path: |
@@ -136,14 +135,14 @@ jobs:
           SAFE_DOMAIN: ${{ inputs.safe_domain }}
 
       - name: Upload archive
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: output-${{ inputs.platform }}.zip
           path: node_modules/pake-cli/output/*
           retention-days: 3
 
       - name: Rust cache store
-        uses: actions/cache/save@v3
+        uses: actions/cache/save@v4
         if: steps.cache_store.outputs.cache-hit != 'true'
         with:
           path: |
