@@ -119,6 +119,11 @@ jobs:
           npm install shelljs
           npm install axios
 
+      - name: Remove existing output directory
+        run: |
+          if [ -d "node_modules/pake-cli/output" ]; then rm -rf node_modules/pake-cli/output; fi
+        shell: bash
+
       - name: Build with pake-cli
         run: |
           node ./script/build_with_pake_cli.js
@@ -143,18 +148,21 @@ jobs:
         run: |
           msi_file=$(find node_modules/pake-cli/ -name "*.msi")
           mv $msi_file node_modules/pake-cli/output/${{ inputs.name }}.msi
+        shell: bash
 
       - name: Move and rename build output (MacOS)
         if: inputs.platform == 'macos-latest'
         run: |
           dmg_file=$(find node_modules/pake-cli/ -name "*.dmg")
           mv $dmg_file node_modules/pake-cli/output/${{ inputs.name }}.dmg
+        shell: bash
 
       - name: Move and rename build output (Ubuntu)
         if: inputs.platform == 'ubuntu-20.04'
         run: |
           linux_file=$(find node_modules/pake-cli/ -name "*.deb" -o -name "*.appimage")
           mv $linux_file node_modules/pake-cli/output/${{ inputs.name }}.${linux_file##*.}
+        shell: bash
 
       - name: Upload archive
         uses: actions/upload-artifact@v4
