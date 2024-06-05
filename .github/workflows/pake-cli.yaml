@@ -44,7 +44,7 @@ on:
       targets:
         description: '[Targets, Optional, Linux only]'
         required: false
-        default: 'deb'
+        default: 'all'
         type: choice
         options:
           - 'deb'
@@ -137,7 +137,7 @@ jobs:
       - name: Move and rename output files
         run: |
           if [ "${{ inputs.platform }}" = "windows-latest" ]; then
-            powershell -Command "Move-Item -Path (Get-ChildItem -Path . -Filter '*.msi' -Recurse | Select-Object -First 1).FullName -Destination node_modules\pake-cli\output\${{ inputs.name }}.msi"
+            pwsh -command "Move-Item -Path (Get-ChildItem -Path . -Filter '*.msi' -Recurse | Select-Object -First 1).FullName -Destination node_modules/pake-cli/output/${{ inputs.name }}.msi"
           elif [ "${{ inputs.platform }}" = "macos-latest" ]; then
             mv $(find . -name "*.dmg") node_modules/pake-cli/output/${{ inputs.name }}.dmg
           elif [ "${{ inputs.platform }}" = "ubuntu-20.04" ]; then
