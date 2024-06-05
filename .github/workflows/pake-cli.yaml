@@ -135,6 +135,27 @@ jobs:
           TARGETS: ${{ inputs.targets }}
           SAFE_DOMAIN: ${{ inputs.safe_domain }}
 
+      - name: Create output directory
+        run: mkdir -p node_modules/pake-cli/output
+
+      - name: Move and rename build output (Windows)
+        if: inputs.platform == 'windows-latest'
+        run: |
+          msi_file=$(find node_modules/pake-cli/ -name "*.msi")
+          mv $msi_file node_modules/pake-cli/output/${{ inputs.name }}.msi
+
+      - name: Move and rename build output (MacOS)
+        if: inputs.platform == 'macos-latest'
+        run: |
+          dmg_file=$(find node_modules/pake-cli/ -name "*.dmg")
+          mv $dmg_file node_modules/pake-cli/output/${{ inputs.name }}.dmg
+
+      - name: Move and rename build output (Ubuntu)
+        if: inputs.platform == 'ubuntu-20.04'
+        run: |
+          linux_file=$(find node_modules/pake-cli/ -name "*.deb" -o -name "*.appimage")
+          mv $linux_file node_modules/pake-cli/output/${{ inputs.name }}.${linux_file##*.}
+
       - name: Upload archive
         uses: actions/upload-artifact@v4
         with:
