@@ -145,7 +145,7 @@ jobs:
           fi
 
       - name: Upload output files
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: output-files-${{ inputs.platform }}
           path: node_modules/pake-cli/output/*
