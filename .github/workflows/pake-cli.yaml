@@ -1,4 +1,5 @@
 name: Build App With Pake CLI
+
 on:
   workflow_dispatch:
     inputs:
@@ -62,10 +63,10 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Install node
+      - name: Set up Node.js 20
         uses: actions/setup-node@v3
         with:
-          node-version: 20
+          node-version: '20'
 
       - name: Install Rust for ubuntu-20.04
         if: inputs.platform == 'ubuntu-20.04'
