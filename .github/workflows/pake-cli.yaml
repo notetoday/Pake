@@ -1,4 +1,5 @@
 name: Build App With Pake CLI
+
 on:
   workflow_dispatch:
     inputs:
@@ -102,7 +103,7 @@ jobs:
           npm install pake-cli
 
       - name: Rust cache restore
-        uses: actions/cache/restore@v4
+        uses: actions/cache/restore@v3
         id: cache_store
         with:
           path: |
@@ -142,7 +143,7 @@ jobs:
           retention-days: 3
 
       - name: Rust cache store
-        uses: actions/cache/save@v4
+        uses: actions/cache/save@v3
         if: steps.cache_store.outputs.cache-hit != 'true'
         with:
           path: |
