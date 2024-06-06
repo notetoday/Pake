@@ -140,14 +140,18 @@ jobs:
           echo "Listing files in node_modules/pake-cli/src-tauri/target/release/bundle/deb/"
           ls -la node_modules/pake-cli/src-tauri/target/release/bundle/deb/
 
-      - name: Move and rename output files for Windows and MacOS
-        if: ${{ inputs.platform != 'ubuntu-20.04' }}
+      - name: Move and rename output files for Windows
+        if: ${{ inputs.platform == 'windows-latest' }}
+        shell: pwsh
         run: |
-          if [ "${{ inputs.platform }}" = "windows-latest" ]; then
-            mv $(find . -name "*.msi" | head -n 1) node_modules/pake-cli/output/${{ inputs.name }}.msi
-          elif [ "${{ inputs.platform }}" = "macos-latest" ]; then
-            mv $(find . -name "*.dmg" | head -n 1) node_modules/pake-cli/output/${{ inputs.name }}.dmg
-          fi
+          $msi = Get-ChildItem -Path node_modules/pake-cli/src-tauri/target/release/bundle/msi/ -Filter '*.msi' -Recurse | Select-Object -First 1
+          Move-Item -Path $msi.FullName -Destination node_modules/pake-cli/output/${{ inputs.name }}.msi
+
+      - name: Move and rename output files for MacOS
+        if: ${{ inputs.platform == 'macos-latest' }}
+        shell: bash
+        run: |
+          mv $(find . -name "*.dmg" | head -n 1) node_modules/pake-cli/output/${{ inputs.name }}.dmg
 
       - name: Move and rename output files for Ubuntu
         if: ${{ inputs.platform == 'ubuntu-20.04' }}
