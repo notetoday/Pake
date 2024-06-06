@@ -140,31 +140,32 @@ jobs:
           echo "Listing files in node_modules/pake-cli/src-tauri/target/release/bundle/deb/"
           ls -la node_modules/pake-cli/src-tauri/target/release/bundle/deb/
 
-      - name: Move and rename output files for Windows and MacOS
-        if: ${{ inputs.platform != 'ubuntu-20.04' }}
+      - name: Move and rename output files for Windows
+        if: ${{ inputs.platform == 'windows-latest' }}
         run: |
-          if ($env:INPUT_PLATFORM -eq "windows-latest") {
-            Move-Item -Path (Get-ChildItem -Path . -Filter '*.msi' -Recurse | Select-Object -First 1).FullName -Destination node_modules/pake-cli/output/${{ inputs.name }}.msi
-          }
-          elseif ($env:INPUT_PLATFORM -eq "macos-latest") {
-            Move-Item -Path $(Get-ChildItem -Path . -Filter '*.dmg' -Recurse | Select-Object -First 1).FullName -Destination node_modules/pake-cli/output/${{ inputs.name }}.dmg
-          }
+          powershell -Command "Move-Item -Path (Get-ChildItem -Path . -Filter '*.msi' -Recurse | Select-Object -First 1).FullName -Destination node_modules/pake-cli/output/${{ inputs.name }}.msi"
         shell: pwsh
         env:
           CARGO_HOME: C:\Users\runneradmin\.cargo
           CARGO_INCREMENTAL: 0
           CARGO_TERM_COLOR: always
 
+      - name: Move and rename output files for MacOS
+        if: ${{ inputs.platform == 'macos-latest' }}
+        run: |
+          mv $(find . -name "*.dmg") node_modules/pake-cli/output/${{ inputs.name }}.dmg
+        shell: bash
+
       - name: Move and rename output files for Ubuntu
         if: ${{ inputs.platform == 'ubuntu-20.04' }}
         run: |
-          find node_modules/pake-cli/src-tauri/target/release/bundle/deb/ -type f -name '*.deb' -exec mv {} node_modules/pake-cli/output/${{ inputs.name }}.deb \;
+          mv node_modules/pake-cli/src-tauri/target/release/bundle/deb/*.deb node_modules/pake-cli/output/${{ inputs.name }}.deb
         shell: bash
 
       - name: Move additional deb files for Ubuntu
         if: ${{ inputs.platform == 'ubuntu-20.04' }}
         run: |
-          find node_modules/pake-cli/ -type f -name '*.deb' -exec mv {} node_modules/pake-cli/output/${{ inputs.name }}.deb \;
+          mv node_modules/pake-cli/*.deb node_modules/pake-cli/output/${{ inputs.name }}.deb
         shell: bash
 
       - name: Upload output files
