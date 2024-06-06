@@ -1,5 +1,4 @@
 name: Build App With Pake CLI
-
 on:
   workflow_dispatch:
     inputs:
@@ -134,6 +133,12 @@ jobs:
           MULTI_ARCH: ${{ inputs.multi_arch }}
           TARGETS: ${{ inputs.targets }}
           SAFE_DOMAIN: ${{ inputs.safe_domain }}
+
+      - name: Debug output files
+        if: ${{ inputs.platform == 'ubuntu-20.04' }}
+        run: |
+          echo "Listing files in node_modules/pake-cli/src-tauri/target/release/bundle/deb/"
+          ls -la node_modules/pake-cli/src-tauri/target/release/bundle/deb/
 
       - name: Move and rename output files for Windows and MacOS
         if: ${{ inputs.platform != 'ubuntu-20.04' }}
