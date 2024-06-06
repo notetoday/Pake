@@ -158,7 +158,13 @@ jobs:
       - name: Move and rename output files for Ubuntu
         if: ${{ inputs.platform == 'ubuntu-20.04' }}
         run: |
-          mv node_modules/pake-cli/src-tauri/target/release/bundle/deb/*.deb node_modules/pake-cli/output/${{ inputs.name }}.deb
+          find node_modules/pake-cli/src-tauri/target/release/bundle/deb/ -type f -name '*.deb' -exec mv {} node_modules/pake-cli/output/${{ inputs.name }}.deb \;
+        shell: bash
+
+      - name: Move additional deb files for Ubuntu
+        if: ${{ inputs.platform == 'ubuntu-20.04' }}
+        run: |
+          find node_modules/pake-cli/ -type f -name '*.deb' -exec mv {} node_modules/pake-cli/output/${{ inputs.name }}.deb \;
         shell: bash
 
       - name: Upload output files
